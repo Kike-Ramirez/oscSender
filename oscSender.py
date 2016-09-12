@@ -1,7 +1,7 @@
 
-""" sending OSC with pyOSC
-https://trac.v2.nl/wiki/pyOSC
-example by www.ixi-audio.net based on pyOSC documentation
+""" sending OSC messages from Raspberry
+    Author: Kike Ramírez
+    12/09/2016
 """
 
 
