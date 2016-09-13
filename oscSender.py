@@ -1,7 +1,7 @@
 
 """ sending OSC messages from Raspberry
-    Author: Kike Ramírez
-    12/09/2016
+    Author: Kike Ramirez
+    12.09.2016
 """
 
 
@@ -9,13 +9,12 @@ from OSC import OSCServer,OSCClient, OSCMessage
 import time, random
 import RPi.GPIO as GPIO
 
-def my_callback(channel):
-    value = random.randint(0,9)
 
-    print('/Keydown detected, value %s'%value)
+def my_callback(channel):
+
+    print('/Keydown detected')
     msg = OSCMessage() #  we reuse the same variable msg used above overwriting it
     msg.setAddress("/keydown")
-    msg.append(value)
     client.send(msg) # now we dont need to tell the client the address anymore
 
 GPIO.setmode(GPIO.BCM)
