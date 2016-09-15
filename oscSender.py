@@ -1,7 +1,12 @@
 
 """ sending OSC messages from Raspberry
     Author: Kike Ramirez
-    12.09.2016
+    15.09.2016
+
+    Static IP Raspberry: 2.0.0.100
+    Static IP Laptop: 2.0.0.1
+    Sends a /ping every 2 seconds
+    Sends a /keydown when botton is pushed
 """
 
 
@@ -10,18 +15,32 @@ import time, random
 import RPi.GPIO as GPIO
 
 
-def my_callback(channel):
+server_IP = '2.0.0.100', 8081
+client_IP = '2.0.0.1', 8080
 
-    print('/Keydown detected')
-    msg = OSCMessage() #  we reuse the same variable msg used above overwriting it
-    msg.setAddress("/keydown")
-    client.send(msg) # now we dont need to tell the client the address anymore
+timerPulse = 1
+timePulse = time.time()
+
+timerPing = 2
+timePing = time.time()
+
+def my_callback(channel):
+    global timePulse;
+
+    if (time.time() - timePulse) > timerPulse:
+
+        try:
+            msg = OSCMessage() #  we reuse the same variable msg used above overwriting it
+            msg.setAddress("/keydown")
+            client.send(msg) # now we dont need to tell the client the address anymore
+            timePulse = time.time()
+        except:
+            print("Sin conexion OSC")
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(24,GPIO.IN)
 GPIO.add_event_detect(24, GPIO.RISING, callback=my_callback)
 
-server_IP = '192.168.1.57', 8081
 verbose = True
 
 try:
@@ -31,22 +50,35 @@ try:
 except:
     if verbose: print("No se encuentra el servidor OSC")
 
-client_IP = '192.255.255.255', 8080
+connected = False
 
-# Creamos el objeto "Cliente"
-client = OSCClient()
+while (connected == False):
 
-# Realizamos la conexion
-client.connect( client_IP )
+    try:
 
+        # Creamos el objeto "Cliente"
+        client = OSCClient()
+
+        # Realizamos la conexion
+        client.connect( client_IP )
+
+        connected = True
+    except:
+        print("Esperando cliente OS ")
+
+print("Sending OSC messages to: " + str(client_IP))
 try :    
     while 1: # endless loop
 
-        msg = OSCMessage() #  we reuse the same variable msg used above overwriting it
-        msg.setAddress("/ping")
-        client.send(msg) # now we dont need to tell the client the address anymore
-        time.sleep(1) # wait here some secs
-        print("Ping...")
+        if (time.time() - timePing) > timerPing:
+            
+            try: 
+                msg = OSCMessage() #  we reuse the same variable msg used above overwriting it
+                msg.setAddress("/ping")
+                client.send(msg) # now we dont need to tell the client the address anymore
+                timePing = time.time() 
+            except:
+                print("Sin conexion OSC")
 
 except KeyboardInterrupt:
     print "Closing OSCClient"
