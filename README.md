@@ -8,6 +8,7 @@ Static IP Laptop: 2.0.0.1
 Sends a /ping every 2 seconds
 Sends a /keydown when botton is pushed
 
+
 # Installation
 
 1) Set Raspberry static IP for ethernet
